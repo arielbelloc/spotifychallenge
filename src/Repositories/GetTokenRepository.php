@@ -6,6 +6,7 @@ use App\ExternalClients\RestClient;
 class GetTokenRepository
 {
     private $restClient;
+    private $accessToken;
     
     public function __construct(RestClient $restClient)
     {
@@ -14,6 +15,26 @@ class GetTokenRepository
 
     public function __invoke() : string
     {
-        return 'BQBHvl2tVOM-WarEF3jr2iGOgv7neugpIQD6Ho8vQ4dsRKu_vo8pI3mcbwg1yblgwfO73Z5YMH5HmYPabCE';
+        if (is_null($this->accessToken)) 
+        {
+            /** TODO: Do this with a config file */
+            $endpoint = $this->getEndpoint('/api/token');
+            $response = $this->restClient->post($endpoint, []);
+
+            $this->accessToken = $response['access_token'];
+        }
+
+        return $this->accessToken;
+    }
+
+    protected function getEndpoint(string $path) : string
+    {
+        /** TODO: Do this with a config file */
+        $protocol = 'https';
+        $domain = 'accounts.spotify.com';
+
+        $endpoint = sprintf('%s://%s%s', $protocol, $domain, $path);
+
+        return $endpoint;
     }
 }
