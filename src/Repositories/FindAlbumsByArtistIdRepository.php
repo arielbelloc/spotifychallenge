@@ -7,11 +7,6 @@ class FindAlbumsByArtistIdRepository extends AbstractRestRespository
 {
     private $albumsCollection = [];
 
-    public function __construct(RestClient $restClient)
-    {
-        $this->restClient = $restClient;
-    }
-
     public function __invoke(string $artistId) : array
     {
         $this->findAllAlbums($artistId);
@@ -22,10 +17,10 @@ class FindAlbumsByArtistIdRepository extends AbstractRestRespository
     private function findAllAlbums($artistId, $offset = 0) {
         /** TODO: Set this in a config file */
         $path = sprintf('/v1/artists/%s/albums', $artistId);
-
-        $endpoint = $this->getEndpoint($path);
         $limit = 20;
 
+        $endpoint = $this->getEndpoint($path);
+        
         $options = [
             'query' => [
                 'album_type' => 'album',
@@ -34,6 +29,8 @@ class FindAlbumsByArtistIdRepository extends AbstractRestRespository
             ]
         ];
 
+        $this->setAuthorizationHeader($options);
+        
         $response = $this->restClient->get($endpoint, $options);
         foreach ($response['items'] as $album) {
             $this->addAlbum($album);

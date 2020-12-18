@@ -9,10 +9,12 @@ use Psr\Log\LoggerInterface;
 abstract class AbstractRestRespository
 {
     protected $restClient;
+    protected $getTokenRepository;
     
-    public function __construct(RestClient $restClient)
+    public function __construct(RestClient $restClient, GetTokenRepository $getTokenRepository)
     {
         $this->restClient = $restClient;
+        $this->getTokenRepository = $getTokenRepository;
     }
 
     protected function getEndpoint(string $path) : string
@@ -24,5 +26,11 @@ abstract class AbstractRestRespository
         $endpoint = sprintf('%s://%s%s', $protocol, $domain, $path);
 
         return $endpoint;
+    }
+
+    protected function setAuthorizationHeader(&$options) {
+        $token = ($this->getTokenRepository)();
+        $authHeader = ['Authorization' => 'Bearer ' . $token];
+        $options['headers'] = ($options['headers'] ?? []) + $authHeader;
     }
 }
