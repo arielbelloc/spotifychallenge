@@ -26,4 +26,23 @@ class GetTokenRepositoryTest extends PHPUnit_TestCase {
             $getTokenRepository('6qqNVTkY8uBg9cP3Jd7DAH')
         );
     }
+
+    public function testEndpointSuccess()
+    {
+        $mockResponse = '{
+            "access_token": "BQBHvl2tVOM-WarEF3jr2iGOgv7neugpIQD6Ho8vQ4dsRKu_vo8pI3mcbwg1yblgwfO73Z5YMH5HmYPabCE"
+        }';
+
+        $restClient = $this->prophesize(RestClient::class);
+
+        /** TODO: Do this mocking a config file */
+        $restClient->post('https://accounts.spotify.com/api/token', Argument::any())->willReturn(json_decode($mockResponse, true));
+
+        $getTokenRepository = new GetTokenRepository($restClient->reveal());
+
+        $this->assertEquals(
+            'BQBHvl2tVOM-WarEF3jr2iGOgv7neugpIQD6Ho8vQ4dsRKu_vo8pI3mcbwg1yblgwfO73Z5YMH5HmYPabCE',
+            $getTokenRepository('6qqNVTkY8uBg9cP3Jd7DAH')
+        );
+    }
 }
