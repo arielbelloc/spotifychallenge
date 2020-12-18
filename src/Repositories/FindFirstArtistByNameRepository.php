@@ -9,6 +9,6 @@ class FindFirstArtistByNameRepository
 
     public function __invoke(string $artistName) : ArtistEntity
     {
-        return new ArtistEntity();
+        return new ArtistEntity(['id' => '1MuQ2m2tg7naeRGAOxYZer']);
     }
 }
