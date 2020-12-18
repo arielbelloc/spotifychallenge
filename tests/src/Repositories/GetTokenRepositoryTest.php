@@ -45,4 +45,31 @@ class GetTokenRepositoryTest extends PHPUnit_TestCase {
             $getTokenRepository('6qqNVTkY8uBg9cP3Jd7DAH')
         );
     }
+
+    public function testRequestOptionsSuccess()
+    {
+        $mockResponse = '{
+            "access_token": "BQBHvl2tVOM-WarEF3jr2iGOgv7neugpIQD6Ho8vQ4dsRKu_vo8pI3mcbwg1yblgwfO73Z5YMH5HmYPabCE"
+        }';
+
+        $restClient = $this->prophesize(RestClient::class);
+
+        /** TODO: Do this mocking a config file */
+        $options = [
+            'headers' => [
+                'Authorization' => 'Basic OWRjZWU2ODU0ODhjNDM3NzgwNzZhZWFkNmZiZTk5OTQ6ZjQwNzNiODcwN2UyNGQxYTkzYzFkMjA4YzhmYzM3Y2E=',
+                'Content-Type' => 'application/x-www-form-urlencoded',
+                'Accept' => 'application/json'
+            ],
+            'form_params' => ['grant_type' => 'client_credentials']
+        ];
+        $restClient->post(Argument::any(), $options)->willReturn(json_decode($mockResponse, true));
+
+        $getTokenRepository = new GetTokenRepository($restClient->reveal());
+
+        $this->assertEquals(
+            'BQBHvl2tVOM-WarEF3jr2iGOgv7neugpIQD6Ho8vQ4dsRKu_vo8pI3mcbwg1yblgwfO73Z5YMH5HmYPabCE',
+            $getTokenRepository('6qqNVTkY8uBg9cP3Jd7DAH')
+        );
+    }
 }
