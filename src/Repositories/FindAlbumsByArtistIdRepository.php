@@ -3,7 +3,7 @@ namespace App\Repositories;
 
 use App\ExternalClients\RestClient;
 
-class FindAlbumsByArtistIdRepository
+class FindAlbumsByArtistIdRepository extends AbstractRestRespository
 {
     private $albumsCollection = [];
 
@@ -20,7 +20,10 @@ class FindAlbumsByArtistIdRepository
     }
 
     private function findAllAlbums($artistId, $offset = 0) {
-        $endpoint = '';
+        /** TODO: Set this in a config file */
+        $path = sprintf('/v1/artists/%s/albums', $artistId);
+
+        $endpoint = $this->getEndpoint($path);
         $limit = 20;
 
         $options = [
@@ -31,7 +34,7 @@ class FindAlbumsByArtistIdRepository
             ]
         ];
 
-        $response = $this->restClient->get($endpoint, $options);;
+        $response = $this->restClient->get($endpoint, $options);
         foreach ($response['items'] as $album) {
             $this->addAlbum($album);
         }

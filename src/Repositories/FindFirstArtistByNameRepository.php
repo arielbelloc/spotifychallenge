@@ -3,12 +3,23 @@ namespace App\Repositories;
 
 use App\Entities\ArtistEntity;
 
-class FindFirstArtistByNameRepository
+class FindFirstArtistByNameRepository extends AbstractRestRespository
 {
     private $artistsCollection = [];
 
     public function __invoke(string $artistName) : ArtistEntity
     {
-        return new ArtistEntity(['id' => '1MuQ2m2tg7naeRGAOxYZer']);
+        $endpoint = $this->getEndpoint('/v1/search');
+        $options = [
+            'query' => [
+                'q' => $artistName,
+                'type' => 'artist',
+                'limit' => '10',
+                'offset' => '0',
+            ]
+        ];
+        $response = $this->restClient->get($endpoint, $options);
+
+        return new ArtistEntity($response['artists']['items'][0]);
     }
 }
