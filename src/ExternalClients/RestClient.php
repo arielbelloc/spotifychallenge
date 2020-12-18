@@ -15,4 +15,9 @@ class RestClient {
     {
         return [];
     }
+
+    public function post(string $endpoint, array $options) : Array
+    {
+        return [];
+    }
 }
