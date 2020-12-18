@@ -17,9 +17,19 @@ class GetTokenRepository
     {
         if (is_null($this->accessToken)) 
         {
-            /** TODO: Do this with a config file */
+            /** TODO: Use a config file */
+            $authToken = 'OWRjZWU2ODU0ODhjNDM3NzgwNzZhZWFkNmZiZTk5OTQ6ZjQwNzNiODcwN2UyNGQxYTkzYzFkMjA4YzhmYzM3Y2E=';
             $endpoint = $this->getEndpoint('/api/token');
-            $response = $this->restClient->post($endpoint, []);
+            $options = [
+                'headers' => [
+                    'Authorization' => 'Basic ' . $authToken,
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Accept' => 'application/json'
+                ],
+                'form_params' => ['grant_type' => 'client_credentials']
+            ];
+
+            $response = $this->restClient->post($endpoint, $options);
 
             $this->accessToken = $response['access_token'];
         }
