@@ -1,21 +1,53 @@
 <?php
 namespace App\Repositories;
 
+use App\ExternalClients\RestClient;
+
 class FindAlbumsByArtistIdRepository
 {
+    private $albumsCollection = [];
+
+    public function __construct(RestClient $restClient)
+    {
+        $this->restClient = $restClient;
+    }
+
     public function __invoke(string $artistId) : array
     {
-        return [
-            [
-                'name' => 'WHEN WE ALL FALL ASLEEP, WHERE DO WE GO?',
-                'released' => '2019-03-29',
-                'tracks' => 14,
-                'cover' => [
-                    'height' => 640,
-                    'url' => 'https://i.scdn.co/image/ab67616d0000b27350a3147b4edd7701a876c6ce',
-                    'width' => 640
-                ],
+        $this->findAllAlbums($artistId);
+        
+        return $this->albumsCollection;
+    }
+
+    private function findAllAlbums($artistId, $offset = 0) {
+        $endpoint = '';
+        $limit = 20;
+
+        $options = [
+            'query' => [
+                'album_type' => 'album',
+                'offset' => $offset,
+                'limmit' => $limit
             ]
+        ];
+
+        $response = $this->restClient->get($endpoint, $options);;
+        foreach ($response['items'] as $album) {
+            $this->addAlbum($album);
+        }
+
+        if (!is_null($response['next'])) {
+            $this->findAllAlbums($artistId, $offset+$limit);
+        }
+    }
+
+    private function addAlbum($album)
+    {
+        $this->albumsCollection[] = [
+            'name' => $album['name'],
+            'released' => $album['release_date'],
+            'tracks' => $album['total_tracks'],
+            'cover' => $album['images'][0] ?? []
         ];
     }
 }
