@@ -23,6 +23,10 @@ class FindFirstArtistByNameRepository extends AbstractRestRespository
 
         $response = $this->restClient->get($endpoint, $options);
 
+         if (!isset($response['artists']['items'][0])) {
+            throw new \Exception('Artist not found');
+         }
+
         return new ArtistEntity($response['artists']['items'][0]);
     }
 }
